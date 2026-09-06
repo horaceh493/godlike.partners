@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Godlike Partners — Админ-панель</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23E7B84D' d='M3 8l4.5 3L12 4l4.5 7L21 8l-2.2 11H5.2L3 8z'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#08080c; --void-2:#0c0d13; --surface:#131319; --surface-2:#191a23; --surface-3:#21222e;
+  --border:rgba(255,255,255,.08); --border-2:rgba(255,255,255,.15);
+  --bone:#EDEDF3; --bone-dim:#A3A3B7; --bone-faint:#6C6D80;
+  --gold:#E7B84D; --gold-2:#C99A34; --gold-soft:rgba(231,184,77,.14);
+  --emerald:#2FAE7C; --emerald-soft:rgba(47,174,124,.14);
+  --rose:#E56464; --rose-soft:rgba(229,100,100,.14);
+  --copper:#B87545; --silver:#AEB6C4;
+  --radius:16px; --radius-sm:10px; --radius-lg:24px; --shadow-lg:0 24px 60px -24px rgba(0,0,0,.7);
+  --font-display:'Bebas Neue',sans-serif; --font-body:'Inter',sans-serif; --font-mono:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:radial-gradient(120% 100% at 100% 0%, #14131c 0%, var(--void) 45%) fixed, var(--void); color:var(--bone); font-family:var(--font-body); font-size:15px; line-height:1.5; -webkit-font-smoothing:antialiased; min-height:100vh;}
+h1,h2,h3{margin:0;font-weight:700;} p{margin:0;} button{font-family:inherit;cursor:pointer;} input,select{font-family:inherit;}
+.hidden{display:none !important;} .mono{font-family:var(--font-mono);}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:6px;}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 18px;border-radius:11px;border:1px solid transparent;font-size:13.5px;font-weight:600;transition:.15s;white-space:nowrap;}
+.btn svg{width:15px;height:15px;} .btn:active{transform:scale(.97);}
+.btn-primary{background:linear-gradient(135deg,var(--gold),var(--gold-2));color:#1a1200;}
+.btn-primary:hover{filter:brightness(1.06);} .btn-primary:disabled{opacity:.4;cursor:not-allowed;}
+.btn-ghost{background:var(--surface-3);color:var(--bone);border-color:var(--border);} .btn-ghost:hover{border-color:var(--border-2);}
+.btn-danger{background:var(--rose-soft);color:var(--rose);border-color:rgba(229,100,100,.3);} .btn-danger:hover{background:rgba(229,100,100,.22);}
+.btn-success{background:var(--emerald-soft);color:var(--emerald);border-color:rgba(47,174,124,.3);} .btn-success:hover{background:rgba(47,174,124,.22);}
+.btn-sm{padding:7px 12px;font-size:12.5px;border-radius:9px;} .btn-block{width:100%;}
+
+.field{display:flex;flex-direction:column;gap:7px;margin-bottom:16px;}
+.field label{font-size:12px;font-weight:600;color:var(--bone-dim);text-transform:uppercase;letter-spacing:.04em;}
+.input,.select{background:var(--surface-2);border:1px solid var(--border);color:var(--bone);padding:11px 13px;border-radius:10px;font-size:14px;width:100%;}
+.input:focus,.select:focus{border-color:var(--gold);background:var(--surface-3);outline:none;}
+.error-text{color:var(--rose);font-size:12.5px;min-height:16px;}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px;}
+.card-title{font-size:15px;font-weight:700;}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;}
+.badge-success{background:var(--emerald-soft);color:var(--emerald);} .badge-warning{background:var(--gold-soft);color:var(--gold);}
+.badge-danger{background:var(--rose-soft);color:var(--rose);} .badge-neutral{background:var(--surface-3);color:var(--bone-dim);}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
+
+table{width:100%;border-collapse:collapse;} .table-wrap{overflow-x:auto;}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--bone-faint);font-weight:600;padding:10px 12px;border-bottom:1px solid var(--border);white-space:nowrap;}
+td{padding:13px 12px;font-size:13.5px;border-bottom:1px solid var(--border);white-space:nowrap;}
+tr:last-child td{border-bottom:none;} tbody tr:hover{background:rgba(255,255,255,.02);}
+.td-dim{color:var(--bone-faint);} .td-emerald{color:var(--emerald);font-weight:600;}
+.row-clickable{cursor:pointer;}
+.empty-icon svg{width:100%;height:100%;display:block;}
+
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.login-card{width:100%;max-width:380px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:34px;}
+.brand-lockup{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:26px;}
+.brand-crown{width:26px;height:26px;color:var(--gold);}
+.brand-word{font-family:var(--font-display);font-size:18px;letter-spacing:.08em;}
+.brand-word small{display:block;font-family:var(--font-body);font-size:9px;letter-spacing:.24em;color:var(--bone-faint);font-weight:600;text-align:center;}
+.login-card h2{font-size:18px;text-align:center;margin-bottom:4px;}
+.login-card .lead{font-size:13px;color:var(--bone-faint);text-align:center;margin-bottom:22px;}
+
+#admin-shell{min-height:100vh;}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 28px;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(8,8,12,.86);backdrop-filter:blur(10px);z-index:40;}
+.topbar-left{display:flex;align-items:center;gap:12px;}
+main{padding:26px 28px 60px;max-width:1200px;margin:0 auto;}
+.view-head{margin-bottom:20px;} .view-head h1{font-size:21px;} .view-head p{color:var(--bone-faint);font-size:13px;margin-top:4px;}
+.tabs{display:flex;gap:6px;background:var(--surface);border:1px solid var(--border);padding:4px;border-radius:11px;margin-bottom:20px;width:fit-content;flex-wrap:wrap;}
+.tabs button{padding:9px 18px;border-radius:8px;background:transparent;border:none;color:var(--bone-faint);font-size:13.5px;font-weight:600;}
+.tabs button.active{background:var(--surface-3);color:var(--gold);}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;}
+.kpi-card .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--bone-faint);font-weight:600;}
+.kpi-card .val{font-family:var(--font-display);font-size:28px;margin-top:6px;}
+
+.ref-card{background:linear-gradient(120deg,var(--surface),var(--surface-2));border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px 24px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;}
+.ref-card .lbl{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--bone-faint);font-weight:600;}
+.ref-card .link{font-family:var(--font-mono);font-size:14px;color:var(--gold);margin-top:6px;word-break:break-all;}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(4,4,7,.7);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px;}
+.modal-card{background:var(--surface-2);border:1px solid var(--border-2);border-radius:var(--radius-lg);padding:26px;width:100%;max-width:460px;max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-lg);}
+.modal-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;} .modal-head h3{font-size:18px;}
+.modal-close{background:var(--surface-3);border:none;border-radius:8px;padding:7px;color:var(--bone-dim);} .modal-close svg{width:15px;height:15px;display:block;}
+.stat-box{background:var(--surface-2);border-radius:12px;padding:16px;margin-bottom:16px;}
+.stat-box .lbl{font-size:12px;color:var(--bone-faint);} .stat-box .val{font-family:var(--font-display);font-size:26px;margin-top:4px;}
+.activity-item{font-size:12.5px;color:var(--bone-dim);padding:9px 11px;background:var(--surface-2);border-radius:8px;margin-bottom:6px;display:flex;justify-content:space-between;gap:10px;}
+.activity-item span:last-child{color:var(--bone-faint);flex:none;}
+.modal-section{margin-top:18px;}
+.modal-section > label{font-size:12px;font-weight:600;color:var(--bone-dim);text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:10px;}
+.msg-bubble{max-width:82%;padding:9px 13px;border-radius:13px;font-size:13px;line-height:1.5;word-break:break-word;}
+.msg-admin{background:var(--gold-soft);color:var(--bone);border-bottom-right-radius:4px;}
+.msg-partner{background:var(--surface-3);color:var(--bone);border-bottom-left-radius:4px;}
+.msg-time{font-size:10px;color:var(--bone-faint);margin-top:3px;}
+
+#toast-root{position:fixed;bottom:22px;right:22px;z-index:300;display:flex;flex-direction:column;gap:10px;align-items:flex-end;}
+.toast{background:var(--surface-2);border:1px solid var(--border-2);border-left:3px solid var(--emerald);border-radius:10px;padding:13px 16px;font-size:13.5px;color:var(--bone);box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:10px;max-width:340px;}
+.toast.error{border-left-color:var(--rose);} .toast svg{width:16px;height:16px;flex:none;color:var(--emerald);} .toast.error svg{color:var(--rose);}
+
+@media (max-width:700px){
+  .kpi-grid{grid-template-columns:repeat(2,1fr);} main{padding:18px 14px 50px;} .topbar{padding:14px 16px;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="brand-lockup">
+      <svg class="brand-crown" viewBox="0 0 24 24" fill="currentColor"><path d="M3 8l4.5 3L12 4l4.5 7L21 8l-2.2 11H5.2L3 8z"/></svg>
+      <div class="brand-word">GODLIKE<small>PARTNERS · ADMIN</small></div>
+    </div>
+    <h2>Панель администратора</h2>
+    <p class="lead">Доступ только для команды Godlike Partners</p>
+    <form id="login-form">
+      <div class="field"><label for="admin-email">Email</label><input class="input" type="email" id="admin-email" required></div>
+      <div class="field"><label for="admin-password">Пароль</label><input class="input" type="password" id="admin-password" required></div>
+      <div class="error-text" id="login-error"></div>
+      <button type="submit" class="btn btn-primary btn-block">Войти</button>
+    </form>
+  </div>
+</div>
+
+<!-- ADMIN SHELL -->
+<div id="admin-shell" class="hidden">
+  <header class="topbar">
+    <div class="topbar-left">
+      <svg class="brand-crown" viewBox="0 0 24 24" fill="currentColor" style="width:20px;height:20px;color:var(--gold)"><path d="M3 8l4.5 3L12 4l4.5 7L21 8l-2.2 11H5.2L3 8z"/></svg>
+      <div class="brand-word" style="font-size:14px;">GODLIKE<small style="font-size:8px;">ADMIN</small></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span class="badge badge-warning" id="role-badge">Режим администратора</span>
+      <button class="btn btn-ghost btn-sm" id="change-pass-btn">Сменить пароль</button>
+      <button class="btn btn-ghost btn-sm" id="logout-btn">Выйти</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="view-head">
+      <h1>Партнёры и выплаты</h1>
+      <p>Обзор партнёров, начисления, очередь выплат и офферы.</p>
+    </div>
+
+    <div class="ref-card">
+      <div>
+        <div class="lbl">Ваша реферальная ссылка</div>
+        <div class="link" id="my-ref-link">—</div>
+      </div>
+      <button class="btn btn-primary btn-sm" id="copy-ref-btn">Скопировать</button>
+    </div>
+
+    <div class="kpi-grid" id="admin-kpis"></div>
+
+    <div class="tabs" id="admin-tabs">
+      <button data-tab="partners" class="active">Партнёры</button>
+      <button data-tab="payouts">Заявки на выплату <span id="payouts-count-badge"></span></button>
+      <button data-tab="offers">Офферы</button>
+      <button data-tab="admins" id="admins-tab-btn" class="hidden">Админы</button>
+    </div>
+
+    <div id="tab-partners">
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Партнёр</th><th>Email</th><th>Статус</th><th>Тир</th><th>Баланс</th><th>Регистрация</th><th></th></tr></thead>
+            <tbody id="partners-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-payouts" class="hidden">
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Дата</th><th>Партнёр</th><th>Email</th><th>Сумма</th><th>Способ</th><th></th></tr></thead>
+            <tbody id="payouts-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-offers" class="hidden">
+      <div class="card">
+        <div class="card-title">Добавить оффер</div>
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:10px;align-items:end;margin-top:14px;">
+          <div class="field" style="margin-bottom:0;"><label>Название</label><input class="input" id="new-offer-name" placeholder="Название бренда"></div>
+          <div class="field" style="margin-bottom:0;"><label>Гео</label><input class="input" id="new-offer-geo" placeholder="Worldwide"></div>
+          <div class="field" style="margin-bottom:0;"><label>Ставка</label><input class="input" id="new-offer-model" placeholder="RevShare 40%"></div>
+          <button class="btn btn-primary" id="add-offer-btn">Добавить</button>
+        </div>
+        <div class="error-text" id="add-offer-error"></div>
+      </div>
+      <div class="card" style="margin-top:16px;">
+        <div class="card-title">Все офферы</div>
+        <div id="offers-list" style="margin-top:14px;display:flex;flex-direction:column;gap:12px;"></div>
+      </div>
+    </div>
+
+    <div id="tab-admins" class="hidden">
+      <div class="card">
+        <div class="card-title">Добавить администратора</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end;margin-top:14px;">
+          <div class="field" style="margin-bottom:0;"><label>Имя</label><input class="input" id="new-admin-name" placeholder="Имя"></div>
+          <div class="field" style="margin-bottom:0;"><label>Email</label><input class="input" id="new-admin-email" placeholder="email@example.com"></div>
+          <div class="field" style="margin-bottom:0;"><label>Пароль</label><input class="input" id="new-admin-password" placeholder="Пароль"></div>
+          <button class="btn btn-primary" id="add-admin-btn">Добавить</button>
+        </div>
+        <div class="error-text" id="add-admin-error"></div>
+      </div>
+      <div class="card" style="margin-top:16px;">
+        <div class="card-title">Все администраторы</div>
+        <div class="table-wrap" style="margin-top:14px;">
+          <table>
+            <thead><tr><th>Имя</th><th>Email</th><th>Роль</th><th>Реф-ссылка</th><th>Партнёров</th><th></th></tr></thead>
+            <tbody id="admins-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- PARTNER DETAIL MODAL -->
+<div class="modal-overlay hidden" id="modal-partner">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3 id="pd-name">—</h3>
+      <button class="modal-close" data-close-modal="modal-partner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg></button>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+      <span class="badge badge-neutral" id="pd-email">—</span>
+      <span class="badge badge-warning" id="pd-tier">—</span>
+      <span class="badge" id="pd-status">—</span>
+    </div>
+    <div class="stat-box"><div class="lbl">Текущий баланс</div><div class="val" id="pd-balance">$0.00</div></div>
+
+    <div class="modal-section">
+      <label>Начислить на баланс</label>
+      <div style="display:flex;gap:8px;">
+        <input class="input" type="number" id="pd-credit-amount" placeholder="Сумма" step="0.01">
+        <button class="btn btn-primary" id="pd-credit-btn" style="flex:none;">Начислить</button>
+      </div>
+      <div class="error-text" id="pd-credit-error"></div>
+    </div>
+
+    <div class="modal-section">
+      <label>Сообщения</label>
+      <div id="pd-messages" style="max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;margin-bottom:10px;"></div>
+      <div style="display:flex;gap:8px;">
+        <input class="input" id="pd-message-input" placeholder="Написать партнёру…">
+        <button class="btn btn-primary" id="pd-message-send" style="flex:none;">Отправить</button>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <label>Последние действия</label>
+      <div id="pd-activity" style="max-height:170px;overflow-y:auto;"></div>
+    </div>
+
+    <div class="modal-section" style="display:flex;gap:8px;">
+      <button class="btn btn-ghost btn-block" id="pd-reset-btn">Сбросить пароль</button>
+      <button class="btn btn-danger btn-block" id="pd-block-btn">Заблокировать</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHANGE PASSWORD MODAL -->
+<div class="modal-overlay hidden" id="modal-change-pass">
+  <div class="modal-card" style="max-width:380px;">
+    <div class="modal-head">
+      <h3>Сменить пароль</h3>
+      <button class="modal-close" data-close-modal="modal-change-pass"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg></button>
+    </div>
+    <div class="field"><label for="cp-new">Новый пароль</label><input class="input" type="password" id="cp-new"></div>
+    <div class="field"><label for="cp-new2">Повторите пароль</label><input class="input" type="password" id="cp-new2"></div>
+    <div class="error-text" id="cp-error"></div>
+    <button class="btn btn-primary btn-block" id="cp-confirm-btn">Сохранить</button>
+  </div>
+</div>
+
+<div id="toast-root"></div>
+
+<script>
+const ICONS = {
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+  x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>'
+};
+const TIERS = [
+  {name:'NOVICE', min:0}, {name:'HUNTER', min:1000}, {name:'TITAN', min:5000}, {name:'GODLIKE', min:15000}
+];
+function getTierName(volume){
+  let name = TIERS[0].name;
+  for(const t of TIERS){ if(volume >= t.min) name = t.name; }
+  return name;
+}
+function fmtMoney(n){ return (Math.round((n||0)*100)/100).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fmtDate(iso){ if(!iso) return '—'; const d=new Date(iso.replace(' ','T')+'Z'); return d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}); }
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+async function api(path, options){
+  const opts = Object.assign({ credentials:'same-origin', headers:{'Content-Type':'application/json'} }, options||{});
+  if(opts.body && typeof opts.body !== 'string') opts.body = JSON.stringify(opts.body);
+  const res = await fetch('/api'+path, opts);
+  let data = null;
+  try{ data = await res.json(); }catch(e){ data = null; }
+  if(!res.ok){ const err = new Error((data && data.error) || 'Request failed'); err.status = res.status; throw err; }
+  return data;
+}
+function showToast(msg, type){
+  const root = document.getElementById('toast-root');
+  const t = document.createElement('div');
+  t.className = 'toast' + (type==='error' ? ' error' : '');
+  t.innerHTML = (type==='error' ? ICONS.x : ICONS.check) + '<span>'+msg+'</span>';
+  root.appendChild(t);
+  setTimeout(()=>{ t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(()=>t.remove(),300); }, 3500);
+}
+function openModal(id){ document.getElementById(id).classList.remove('hidden'); }
+function closeModal(id){ document.getElementById(id).classList.add('hidden'); }
+document.querySelectorAll('[data-close-modal]').forEach(b=>b.addEventListener('click',()=>closeModal(b.dataset.closeModal)));
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',(e)=>{ if(e.target===m) m.classList.add('hidden'); }));
+
+let partners = [];
+let currentPartnerId = null;
+let myAdminInfo = null;
+
+/* ---------- login ---------- */
+document.getElementById('login-form').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const email = document.getElementById('admin-email').value.trim();
+  const password = document.getElementById('admin-password').value;
+  const err = document.getElementById('login-error');
+  try{
+    const r = await api('/auth/login', { method:'POST', body:{ email, password } });
+    if(r.role !== 'admin'){
+      await api('/auth/logout', { method:'POST' });
+      err.textContent = 'This account does not have admin access.';
+      return;
+    }
+    err.textContent = '';
+    enterAdmin();
+  }catch(e){ err.textContent = e.message; }
+});
+document.getElementById('logout-btn').addEventListener('click', async ()=>{
+  try{ await api('/auth/logout', { method:'POST' }); }catch(e){}
+  document.getElementById('admin-shell').classList.add('hidden');
+  document.getElementById('login-screen').classList.remove('hidden');
+});
+
+document.getElementById('change-pass-btn').addEventListener('click',()=>{
+  document.getElementById('cp-new').value = '';
+  document.getElementById('cp-new2').value = '';
+  document.getElementById('cp-error').textContent = '';
+  openModal('modal-change-pass');
+});
+document.getElementById('cp-confirm-btn').addEventListener('click', async ()=>{
+  const a = document.getElementById('cp-new').value;
+  const b = document.getElementById('cp-new2').value;
+  const err = document.getElementById('cp-error');
+  if(!a || a.length<6){ err.textContent='Минимум 6 символов.'; return; }
+  if(a!==b){ err.textContent='Пароли не совпадают.'; return; }
+  try{
+    await api('/me/password', { method:'PUT', body:{ newPassword:a } });
+    err.textContent = '';
+    closeModal('modal-change-pass');
+    showToast('Пароль обновлён. Используйте его при следующем входе.','success');
+  }catch(e){ err.textContent = e.message; }
+});
+
+async function enterAdmin(){
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('admin-shell').classList.remove('hidden');
+  myAdminInfo = await api('/admin/me');
+  document.getElementById('role-badge').textContent = myAdminInfo.isSuper ? 'Супер-администратор' : 'Администратор';
+  document.getElementById('my-ref-link').textContent = window.location.origin + '/?ref=' + myAdminInfo.refCode;
+  document.getElementById('admins-tab-btn').classList.toggle('hidden', !myAdminInfo.isSuper);
+  await loadPartners();
+  await loadPayouts();
+}
+document.getElementById('copy-ref-btn').addEventListener('click',()=>{
+  const text = document.getElementById('my-ref-link').textContent;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>showToast('Скопировано','success'));
+  } else {
+    const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta); showToast('Скопировано','success');
+  }
+});
+
+/* ---------- tabs ---------- */
+document.querySelectorAll('#admin-tabs button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#admin-tabs button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  document.getElementById('tab-partners').classList.toggle('hidden', b.dataset.tab!=='partners');
+  document.getElementById('tab-payouts').classList.toggle('hidden', b.dataset.tab!=='payouts');
+  document.getElementById('tab-offers').classList.toggle('hidden', b.dataset.tab!=='offers');
+  document.getElementById('tab-admins').classList.toggle('hidden', b.dataset.tab!=='admins');
+  if(b.dataset.tab==='offers') loadOffers();
+  if(b.dataset.tab==='admins') loadAdmins();
+}));
+
+/* ---------- partners ---------- */
+async function loadPartners(){
+  partners = await api('/admin/partners');
+  renderKpis();
+  renderPartnersTable();
+}
+function renderKpis(){
+  const total = partners.length;
+  const active = partners.filter(p=>p.status==='active').length;
+  const blocked = partners.filter(p=>p.status==='blocked').length;
+  const totalBalance = partners.reduce((s,p)=>s+p.balance,0);
+  document.getElementById('admin-kpis').innerHTML = [
+    {lbl:'Всего партнёров', val:total}, {lbl:'Активных', val:active},
+    {lbl:'Заблокировано', val:blocked}, {lbl:'Общий баланс', val:'$'+fmtMoney(totalBalance)}
+  ].map(k=>'<div class="kpi-card"><div class="lbl">'+k.lbl+'</div><div class="val">'+k.val+'</div></div>').join('');
+}
+function renderPartnersTable(){
+  const body = document.getElementById('partners-body');
+  if(!partners.length){
+    body.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--bone-faint);">Пока нет ни одного зарегистрированного партнёра.</td></tr>';
+    return;
+  }
+  body.innerHTML = partners.map(p=>
+    '<tr class="row-clickable" data-open-partner="'+p.id+'">'+
+      '<td>'+(p.firstName||'—')+' '+(p.lastName||'')+(p.unreadMessages ? ' <span class="badge badge-warning" style="margin-left:4px;">'+p.unreadMessages+' новых</span>' : '')+'</td>'+
+      '<td class="td-dim">'+p.email+'</td>'+
+      '<td>'+(p.status==='active' ? '<span class="badge badge-success"><span class="badge-dot"></span>Активен</span>' : '<span class="badge badge-danger"><span class="badge-dot"></span>Заблокирован</span>')+'</td>'+
+      '<td>'+getTierName(p.tierVolume)+'</td>'+
+      '<td class="td-emerald">$'+fmtMoney(p.balance)+'</td>'+
+      '<td class="td-dim">'+fmtDate(p.createdAt)+'</td>'+
+      '<td><button class="btn btn-ghost btn-sm">Открыть</button></td>'+
+    '</tr>'
+  ).join('');
+  body.querySelectorAll('[data-open-partner]').forEach(tr=>tr.addEventListener('click',()=>openPartnerDetail(Number(tr.dataset.openPartner))));
+}
+
+async function openPartnerDetail(id){
+  currentPartnerId = id;
+  const p = await api('/admin/partners/'+id);
+  document.getElementById('pd-name').textContent = (p.firstName||'—')+' '+(p.lastName||'');
+  document.getElementById('pd-email').textContent = p.email;
+  document.getElementById('pd-tier').textContent = getTierName(p.tierVolume);
+  const statusEl = document.getElementById('pd-status');
+  statusEl.textContent = p.status==='active' ? 'Активен' : 'Заблокирован';
+  statusEl.className = 'badge ' + (p.status==='active' ? 'badge-success' : 'badge-danger');
+  document.getElementById('pd-balance').textContent = '$'+fmtMoney(p.balance);
+  document.getElementById('pd-credit-amount').value = '';
+  document.getElementById('pd-credit-error').textContent = '';
+  document.getElementById('pd-block-btn').textContent = p.status==='active' ? 'Заблокировать' : 'Разблокировать';
+  document.getElementById('pd-block-btn').className = 'btn btn-block ' + (p.status==='active' ? 'btn-danger' : 'btn-success');
+
+  const items = p.activity.map(a=>({msg:a.message, date:a.created_at}));
+  document.getElementById('pd-activity').innerHTML = items.length
+    ? items.map(a=>'<div class="activity-item"><span>'+a.msg+'</span><span>'+fmtDate(a.date)+'</span></div>').join('')
+    : '<div style="font-size:12.5px;color:var(--bone-faint);">Пока нет действий.</div>';
+
+  await loadPartnerMessages(id);
+  openModal('modal-partner');
+}
+
+async function loadPartnerMessages(id){
+  const box = document.getElementById('pd-messages');
+  try{
+    const rows = await api('/admin/partners/'+id+'/messages');
+    box.innerHTML = rows.length
+      ? rows.map(m=>
+          '<div style="display:flex;flex-direction:column;'+(m.sender==='admin'?'align-items:flex-end;':'align-items:flex-start;')+'">'+
+            '<div class="msg-bubble '+(m.sender==='admin'?'msg-admin':'msg-partner')+'">'+escapeHtml(m.body)+'</div>'+
+            '<div class="msg-time">'+(m.sender==='admin'?'Вы · ':'Партнёр · ')+fmtDate(m.created_at)+'</div>'+
+          '</div>'
+        ).join('')
+      : '<div style="font-size:12.5px;color:var(--bone-faint);">Переписки пока нет.</div>';
+    box.scrollTop = box.scrollHeight;
+  }catch(e){ box.innerHTML = '<div class="error-text">Не удалось загрузить сообщения.</div>'; }
+}
+document.getElementById('pd-message-send').addEventListener('click', async ()=>{
+  const input = document.getElementById('pd-message-input');
+  const body = input.value.trim();
+  if(!body || !currentPartnerId) return;
+  input.disabled = true;
+  try{
+    await api('/admin/partners/'+currentPartnerId+'/messages', { method:'POST', body:{ body } });
+    input.value = '';
+    await loadPartnerMessages(currentPartnerId);
+  }catch(e){ showToast(e.message,'error'); }
+  input.disabled = false;
+  input.focus();
+});
+document.getElementById('pd-message-input').addEventListener('keydown', (e)=>{
+  if(e.key==='Enter'){ e.preventDefault(); document.getElementById('pd-message-send').click(); }
+});
+
+document.getElementById('pd-credit-btn').addEventListener('click', async ()=>{
+  const amt = parseFloat(document.getElementById('pd-credit-amount').value);
+  const err = document.getElementById('pd-credit-error');
+  if(!amt || amt<=0){ err.textContent = 'Введите сумму больше нуля.'; return; }
+  try{
+    await api('/admin/partners/'+currentPartnerId+'/credit', { method:'POST', body:{ amount:amt } });
+    err.textContent = '';
+    showToast('Баланс партнёра пополнен на $'+fmtMoney(amt),'success');
+    await openPartnerDetail(currentPartnerId);
+    await loadPartners();
+  }catch(e){ err.textContent = e.message; }
+});
+
+document.getElementById('pd-reset-btn').addEventListener('click', async ()=>{
+  try{
+    const r = await api('/admin/partners/'+currentPartnerId+'/reset-password', { method:'POST' });
+    showToast('Новый временный пароль: '+r.tempPassword+' — передайте его партнёру','success');
+    await openPartnerDetail(currentPartnerId);
+  }catch(e){ showToast(e.message,'error'); }
+});
+
+document.getElementById('pd-block-btn').addEventListener('click', async ()=>{
+  const p = partners.find(x=>x.id===currentPartnerId);
+  const newStatus = p.status==='active' ? 'blocked' : 'active';
+  try{
+    await api('/admin/partners/'+currentPartnerId+'/status', { method:'PUT', body:{ status:newStatus } });
+    showToast(newStatus==='blocked' ? 'Партнёр заблокирован' : 'Партнёр разблокирован','success');
+    await openPartnerDetail(currentPartnerId);
+    await loadPartners();
+  }catch(e){ showToast(e.message,'error'); }
+});
+
+/* ---------- payouts ---------- */
+async function loadPayouts(){
+  const rows = await api('/admin/payouts');
+  document.getElementById('payouts-count-badge').textContent = rows.length ? '('+rows.length+')' : '';
+  const body = document.getElementById('payouts-body');
+  if(!rows.length){
+    body.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--bone-faint);">Нет заявок на выплату в обработке.</td></tr>';
+    return;
+  }
+  body.innerHTML = rows.map(t=>
+    '<tr><td class="td-dim">'+fmtDate(t.created_at)+'</td>'+
+    '<td>'+(t.first_name||'—')+' '+(t.last_name||'')+'</td>'+
+    '<td class="td-dim">'+t.email+'</td>'+
+    '<td>$'+fmtMoney(Math.abs(t.amount))+'</td>'+
+    '<td class="mono td-dim">'+t.method+'</td>'+
+    '<td style="display:flex;gap:6px;">'+
+      '<button class="btn btn-success btn-sm" data-settle="'+t.id+'" data-action="paid">Выплачено</button>'+
+      '<button class="btn btn-danger btn-sm" data-settle="'+t.id+'" data-action="reject">Отклонить</button>'+
+    '</td></tr>'
+  ).join('');
+  body.querySelectorAll('[data-settle]').forEach(b=>b.addEventListener('click', async ()=>{
+    try{
+      await api('/admin/transactions/'+b.dataset.settle+'/settle', { method:'POST', body:{ action:b.dataset.action } });
+      showToast(b.dataset.action==='paid' ? 'Выплата отмечена как выполненная' : 'Заявка отклонена, средства возвращены партнёру','success');
+      await loadPayouts();
+      await loadPartners();
+    }catch(e){ showToast(e.message,'error'); }
+  }));
+}
+
+/* ---------- offers ---------- */
+async function loadOffers(){
+  const box = document.getElementById('offers-list');
+  try{
+    const offers = await api('/admin/offers');
+    if(!offers.length){ box.innerHTML = '<div style="color:var(--bone-faint);font-size:13px;">Пока нет ни одного оффера.</div>'; return; }
+    box.innerHTML = offers.map(o => `
+      <div class="card" style="padding:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;">
+          <div style="font-weight:700;font-size:14.5px;">${escapeHtml(o.name)}</div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span class="badge ${o.status==='active'?'badge-success':'badge-neutral'}">${o.status==='active'?'Активен':'Приостановлен'}</span>
+            <button class="btn btn-ghost btn-sm" data-toggle-status="${o.id}" data-current="${o.status}">${o.status==='active'?'Приостановить':'Включить'}</button>
+            <button class="btn btn-danger btn-sm" data-delete-offer="${o.id}">Удалить</button>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:14px;">
+          <div class="field" style="margin-bottom:0;"><label>Гео</label><input class="input" data-field="geo" data-offer="${o.id}" value="${escapeHtml(o.geo)}"></div>
+          <div class="field" style="margin-bottom:0;"><label>Ставка</label><input class="input" data-field="model" data-offer="${o.id}" value="${escapeHtml(o.model)}"></div>
+          <div class="field" style="margin-bottom:0;"><label>Ср. конверсия</label><input class="input" data-field="conversion" data-offer="${o.id}" value="${escapeHtml(o.conversion)}" placeholder="напр. 32%"></div>
+        </div>
+        <div class="field" style="margin-bottom:0;margin-top:10px;">
+          <label>Ссылка на оффер / APK</label>
+          <div style="display:flex;gap:8px;">
+            <input class="input mono" data-field="downloadUrl" data-offer="${o.id}" value="${escapeHtml(o.downloadUrl)}" placeholder="https://…">
+            <button class="btn btn-primary btn-sm" data-save-offer="${o.id}" style="flex:none;">Сохранить</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    box.querySelectorAll('[data-save-offer]').forEach(btn=>btn.addEventListener('click', async ()=>{
+      const id = btn.dataset.saveOffer;
+      const geo = box.querySelector(`[data-field="geo"][data-offer="${id}"]`).value;
+      const model = box.querySelector(`[data-field="model"][data-offer="${id}"]`).value;
+      const conversion = box.querySelector(`[data-field="conversion"][data-offer="${id}"]`).value;
+      const downloadUrl = box.querySelector(`[data-field="downloadUrl"][data-offer="${id}"]`).value;
+      try{
+        await api('/admin/offers/'+id, { method:'PUT', body:{ geo, model, conversion, downloadUrl } });
+        showToast('Оффер обновлён','success');
+      }catch(e){ showToast(e.message,'error'); }
+    }));
+    box.querySelectorAll('[data-toggle-status]').forEach(btn=>btn.addEventListener('click', async ()=>{
+      const id = btn.dataset.toggleStatus;
+      const next = btn.dataset.current==='active' ? 'paused' : 'active';
+      try{ await api('/admin/offers/'+id, { method:'PUT', body:{ status:next } }); loadOffers(); }
+      catch(e){ showToast(e.message,'error'); }
+    }));
+    box.querySelectorAll('[data-delete-offer]').forEach(btn=>btn.addEventListener('click', async ()=>{
+      if(!confirm('Удалить этот оффер?')) return;
+      try{ await api('/admin/offers/'+btn.dataset.deleteOffer, { method:'DELETE' }); loadOffers(); }
+      catch(e){ showToast(e.message,'error'); }
+    }));
+  }catch(e){ box.innerHTML = '<div class="error-text">Не удалось загрузить офферы.</div>'; }
+}
+
+document.getElementById('add-offer-btn').addEventListener('click', async ()=>{
+  const name = document.getElementById('new-offer-name').value.trim();
+  const geo = document.getElementById('new-offer-geo').value.trim();
+  const model = document.getElementById('new-offer-model').value.trim();
+  const err = document.getElementById('add-offer-error');
+  if(!name){ err.textContent = 'Введите название.'; return; }
+  try{
+    await api('/admin/offers', { method:'POST', body:{ name, geo, model } });
+    err.textContent = '';
+    document.getElementById('new-offer-name').value = '';
+    document.getElementById('new-offer-geo').value = '';
+    document.getElementById('new-offer-model').value = '';
+    showToast('Оффер добавлен','success');
+    loadOffers();
+  }catch(e){ err.textContent = e.message; }
+});
+
+/* ---------- admins (super-admin only) ---------- */
+async function loadAdmins(){
+  const body = document.getElementById('admins-body');
+  try{
+    const admins = await api('/admin/admins');
+    body.innerHTML = admins.map(a=>
+      '<tr><td>'+(a.firstName||'—')+'</td><td class="td-dim">'+a.email+'</td>'+
+      '<td>'+(a.isSuper ? '<span class="badge badge-warning">Супер-админ</span>' : '<span class="badge badge-neutral">Админ</span>')+'</td>'+
+      '<td class="mono td-dim" style="max-width:220px;overflow:hidden;text-overflow:ellipsis;">'+window.location.origin+'/?ref='+a.refCode+'</td>'+
+      '<td>'+a.partnerCount+'</td>'+
+      '<td>'+(a.isSuper ? '' : '<button class="btn btn-danger btn-sm" data-delete-admin="'+a.id+'">Удалить</button>')+'</td></tr>'
+    ).join('');
+    body.querySelectorAll('[data-delete-admin]').forEach(btn=>btn.addEventListener('click', async ()=>{
+      if(!confirm('Удалить этого администратора? Его партнёры станут неприкреплёнными.')) return;
+      try{ await api('/admin/admins/'+btn.dataset.deleteAdmin, { method:'DELETE' }); showToast('Администратор удалён','success'); loadAdmins(); loadPartners(); }
+      catch(e){ showToast(e.message,'error'); }
+    }));
+  }catch(e){ body.innerHTML = '<tr><td colspan="6" class="error-text">Не удалось загрузить список.</td></tr>'; }
+}
+document.getElementById('add-admin-btn').addEventListener('click', async ()=>{
+  const firstName = document.getElementById('new-admin-name').value.trim();
+  const email = document.getElementById('new-admin-email').value.trim();
+  const password = document.getElementById('new-admin-password').value;
+  const err = document.getElementById('add-admin-error');
+  if(!firstName || !email || !password){ err.textContent = 'Заполните все поля.'; return; }
+  try{
+    await api('/admin/admins', { method:'POST', body:{ firstName, email, password } });
+    err.textContent = '';
+    document.getElementById('new-admin-name').value = '';
+    document.getElementById('new-admin-email').value = '';
+    document.getElementById('new-admin-password').value = '';
+    showToast('Администратор добавлен','success');
+    loadAdmins();
+  }catch(e){ err.textContent = e.message; }
+});
+
+/* ---------- init: resume session if already logged in as admin ---------- */
+(async function init(){
+  try{
+    await api('/me');
+    await api('/admin/partners');
+    enterAdmin();
+  }catch(e){
+    document.getElementById('login-screen').classList.remove('hidden');
+  }
+})();
+</script>
+</body>
+</html>
