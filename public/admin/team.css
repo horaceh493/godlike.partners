@@ -1,0 +1,24 @@
+.team-actions{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.team-link-list{max-width:280px;font-size:12px;overflow-wrap:anywhere;line-height:1.7}
+.team-note{color:var(--bone-dim);font-size:13px;line-height:1.7;margin:10px 0}
+.team-tag{font-size:12px;color:var(--gold);margin-top:4px}
+.team-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.team-dialog{background:#111215;color:var(--bone);border:1px solid var(--border);border-radius:16px;padding:26px;width:min(550px,92vw);max-height:85vh;overflow:auto}
+.team-dialog::backdrop{background:rgba(0,0,0,.8)}
+.team-dialog h3{margin-bottom:18px}.team-dialog textarea{width:100%;min-height:130px;resize:vertical}
+.team-dialog .input{width:100%}.team-dialog select{color-scheme:dark}
+.team-guide{color:var(--gold);text-decoration:underline;text-underline-offset:3px}
+.team-log{margin:10px 0;padding-left:18px;color:var(--bone-dim);font-size:12px;line-height:1.8}
+.team-code{white-space:pre-wrap;overflow-wrap:anywhere;font-family:monospace;font-size:12px}
+.tg-status{padding:10px 0;color:var(--bone-dim);font-size:13px}
+#tab-admins table{table-layout:fixed;width:100%;min-width:0}
+#tab-admins th,#tab-admins td{white-space:normal;overflow-wrap:anywhere;padding:14px 9px}
+#tab-admins th:nth-child(1){width:10%}#tab-admins th:nth-child(2){width:14%}
+#tab-admins th:nth-child(3){width:15%}#tab-admins th:nth-child(4){width:7%}
+#tab-admins th:nth-child(5){width:15%}#tab-admins th:nth-child(6){width:17%}
+#tab-admins th:nth-child(7){width:10%}#tab-admins th:nth-child(8){width:12%}
+#tab-admins .btn{max-width:100%;white-space:normal;font-size:12px;line-height:1.4;padding:8px 10px}
+#tab-admins .badge{white-space:normal;font-size:11px}
+#tab-admins .team-link-list{max-width:100%}
+@media(max-width:700px){#tab-admins table,#tab-admins tbody,#tab-admins tr,#tab-admins td{display:block;width:100%}#tab-admins thead{display:none}#tab-admins tr{border:1px solid var(--border);border-radius:12px;margin:16px 0;padding:10px}#tab-admins td{border:0;padding:9px}#tab-admins td::before{content:attr(data-label);display:block;color:var(--bone-faint);font-size:11px;margin-bottom:5px}}
+@media(max-width:700px){.team-grid{grid-template-columns:1fr}.team-create{display:flex!important;flex-direction:column;align-items:stretch!important}.topbar>div{flex-wrap:wrap}.team-dialog{padding:18px}}
